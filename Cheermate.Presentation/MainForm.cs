@@ -9,7 +9,7 @@ namespace Cheermate.Presentation
 {
     public partial class MainForm : Form
     {
-        private DataGridView tasksGrid;
+        private DataGridView tasksGrid = null!;
         private BindingSource tasksBindingSource = new();
         private List<TodoTask> _tasks = new();
 

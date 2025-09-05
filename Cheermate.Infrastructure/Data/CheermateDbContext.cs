@@ -41,7 +41,7 @@ namespace Cheermate.Infrastructure.Data
             Seed(modelBuilder);
         }
 
-        private void Seed(ModelBuilder modelBuilder)
+        private static void Seed(ModelBuilder modelBuilder)
         {
             var baseDate = DateTime.UtcNow;
 

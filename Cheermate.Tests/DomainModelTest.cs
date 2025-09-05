@@ -10,7 +10,7 @@ namespace Cheermate.Tests
     public class DomainModelTest
     {
         [Fact]
-        public void CompletionPercentage_Is_Zero_When_No_SubTasks()
+        public void CompletionPercentageIsZeroWhenNoSubTasks()
         {
             var todo = new DomainTask
             {
@@ -24,7 +24,7 @@ namespace Cheermate.Tests
 
         // Line ~33 previously failing likely referenced Entities.Task
         [Fact]
-        public void CompletionPercentage_Computes_From_SubTasks()
+        public void CompletionPercentageComputesFromSubTasks()
         {
             var todo = new DomainTask
             {
@@ -44,7 +44,7 @@ namespace Cheermate.Tests
 
         // Line ~51 also referenced the old name
         [Fact]
-        public void IsOverdue_Returns_False_When_No_DueDate()
+        public void IsOverdueReturnsFalseWhenNoDueDate()
         {
             var todo = new DomainTask
             {

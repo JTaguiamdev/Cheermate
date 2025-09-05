@@ -8,7 +8,7 @@ namespace Cheermate.Tests
     public class QuickDomainTest
     {
         [Fact]
-        public void CompletionPercentage_Computes_From_SubTasks()
+        public void CompletionPercentageComputesFromSubTasks()
         {
             var task = new TodoTask
             {
