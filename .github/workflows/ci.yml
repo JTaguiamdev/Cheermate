@@ -16,7 +16,31 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore Cheermate.sln
+
+      - name: Build (Non-Windows projects)
+        run: |
+          dotnet build Cheermate.Domain/Cheermate.Domain.csproj --configuration Release --no-restore
+          dotnet build Cheermate.Application/Cheermate.Application.csproj --configuration Release --no-restore
+          dotnet build Cheermate.Infrastructure/Cheermate.Infrastructure.csproj --configuration Release --no-restore
+          dotnet build Cheermate.Tests/Cheermate.Tests.csproj --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test Cheermate.Tests/Cheermate.Tests.csproj --configuration Release --no-build --logger trx
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
 
       - name: Restore
         run: dotnet restore Cheermate.sln
