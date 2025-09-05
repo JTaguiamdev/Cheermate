@@ -48,7 +48,7 @@ internal static class Program
         // Apply migrations
         using (var scope = provider.CreateScope())
         {
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var db = scope.ServiceProvider.GetRequiredService<CheermateDbContext>();
             await db.Database.MigrateAsync();
         }
 

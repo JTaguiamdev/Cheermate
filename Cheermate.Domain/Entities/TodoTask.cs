@@ -25,7 +25,6 @@ namespace Cheermate.Domain.Entities
         public virtual User User { get; set; } = null!;
 
         public virtual ICollection<SubTask> SubTasks { get; set; } = new List<SubTask>();
-        public object Subtasks { get; set; }
 
         public bool IsOverdue => !IsCompleted && DueDate.HasValue && DueDate < DateTime.UtcNow;
         public bool IsUpcoming => !IsCompleted && DueDate.HasValue && DueDate <= DateTime.UtcNow.AddDays(3);

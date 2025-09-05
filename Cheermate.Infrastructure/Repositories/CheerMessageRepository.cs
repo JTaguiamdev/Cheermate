@@ -7,9 +7,9 @@ namespace Cheermate.Infrastructure.Repositories;
 
 public class CheerMessageRepository : ICheerMessageRepository
 {
-    private readonly AppDbContext _db;
+    private readonly CheermateDbContext _db;
 
-    public CheerMessageRepository(AppDbContext db)
+    public CheerMessageRepository(CheermateDbContext db)
     {
         _db = db;
     }
