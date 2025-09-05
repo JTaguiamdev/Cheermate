@@ -9,6 +9,7 @@
 
 	<ItemGroup>
 		<Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="..\Cheermate.UI.Tests\TestData\seeded.db" Link="cheermate.db" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\Cheermate.UI.Tests\TestData\seeded.db')" />
 	</ItemGroup>
 
 	<ItemGroup>

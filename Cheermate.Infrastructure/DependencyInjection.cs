@@ -18,13 +18,14 @@ public static class DependencyInjection
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("Connection string is null or empty.", nameof(connectionString));
 
-        services.AddDbContext<AppDbContext>(options =>
+        services.AddDbContext<CheermateDbContext>(options =>
         {
             options.UseSqlite(connectionString);
         });
 
         // Repositories
         services.AddScoped<ICheerMessageRepository, CheerMessageRepository>();
+        services.AddScoped<ITodoTaskRepository, TodoTaskRepository>();
 
         // Existing greeting service
         services.AddSingleton<IGreetingService, SystemGreetingService>();

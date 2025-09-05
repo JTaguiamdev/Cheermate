@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using FlaUI.Core.AutomationElements;
 using FlaUI.UIA3;
 using Xunit;
@@ -16,10 +17,30 @@ public class SmokeTests : IDisposable
 
     public SmokeTests()
     {
+        // Create seeded database before launching the app
+        SetupSeededDatabase().GetAwaiter().GetResult();
+
         var exePath = Path.Combine(AppContext.BaseDirectory, "Cheermate.Presentation.exe");
         Assert.True(File.Exists(exePath), $"Cheermate.Presentation.exe not found at {exePath}");
         _app = FlaUIApplication.Launch(exePath);
         _automation = new UIA3Automation();
+    }
+
+    private static async Task SetupSeededDatabase()
+    {
+        var testDataDir = Path.Combine(AppContext.BaseDirectory, "TestData");
+        var seededDbPath = Path.Combine(testDataDir, "seeded.db");
+        
+        // Create the seeded database
+        await DatabaseSeeder.CreateSeededDatabase(seededDbPath);
+        
+        // Copy it to where the app expects to find the database
+        var appDbPath = Path.Combine(AppContext.BaseDirectory, "cheermate.db");
+        if (File.Exists(appDbPath))
+        {
+            File.Delete(appDbPath);
+        }
+        File.Copy(seededDbPath, appDbPath);
     }
 
     [Fact]

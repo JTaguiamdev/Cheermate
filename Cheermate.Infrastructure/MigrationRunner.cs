@@ -22,7 +22,7 @@ public class MigrationRunner : IHostedService
         try
         {
             using var scope = _provider.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var db = scope.ServiceProvider.GetRequiredService<CheermateDbContext>();
             _logger.LogInformation("Applying pending EF Core migrations (if any)...");
             await db.Database.MigrateAsync(cancellationToken);
             _logger.LogInformation("Database is up to date.");
