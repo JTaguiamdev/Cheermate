@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Cheermate.Domain.Entities;
 
 namespace Cheermate.Infrastructure.Data
@@ -21,8 +21,9 @@ namespace Cheermate.Infrastructure.Data
                 e.Property(x => x.Title).IsRequired().HasMaxLength(200);
                 e.Property(x => x.Description).HasMaxLength(1000);
                 e.Property(x => x.Priority).HasConversion<string>();
+
                 e.HasOne(x => x.User)
-                 .WithMany()
+                 .WithMany()              // You can later add a navigation collection on User if desired
                  .HasForeignKey(x => x.UserId)
                  .OnDelete(DeleteBehavior.Cascade);
 
@@ -41,9 +42,10 @@ namespace Cheermate.Infrastructure.Data
             Seed(modelBuilder);
         }
 
-        private void Seed(ModelBuilder modelBuilder)
+        private static void Seed(ModelBuilder modelBuilder)
         {
-            var baseDate = DateTime.UtcNow;
+            // STATIC (no dynamic DateTime.UtcNow)
+            var baseDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
             modelBuilder.Entity<User>().HasData(new User
             {

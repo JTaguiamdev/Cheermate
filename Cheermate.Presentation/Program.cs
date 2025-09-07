@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Cheermate.Application;
+using Cheermate.Application;          // extension methods (AddApplicationServices)
 using Cheermate.Infrastructure;
 using Cheermate.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -18,15 +18,12 @@ internal static class Program
     {
         ApplicationConfiguration.Initialize();
 
-        // Configuration
         var config = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
-        // DI container
         var services = new ServiceCollection();
-
         services.AddSingleton<IConfiguration>(config);
 
         services
@@ -39,22 +36,27 @@ internal static class Program
             .AddApplicationServices();
 
         var connectionString = config.GetConnectionString("Default");
-        services.AddInfrastructureServices(connectionString);
+        services.AddInfrastructureServices(connectionString, applyMigrations: false); // we migrate explicitly below
 
-        services.AddTransient<MainForm>();
+        services.AddScoped<MainForm>();
 
         using var provider = services.BuildServiceProvider();
 
-        // Apply migrations
+        // Explicit migrations (run both contexts if registered)
         using (var scope = provider.CreateScope())
         {
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            await db.Database.MigrateAsync();
+            var appDb = scope.ServiceProvider.GetService<AppDbContext>();
+            if (appDb != null)
+                await appDb.Database.MigrateAsync();
+
+            var tasksDb = scope.ServiceProvider.GetService<CheermateDbContext>();
+            if (tasksDb != null)
+                await tasksDb.Database.MigrateAsync();
         }
 
         var mainForm = provider.GetRequiredService<MainForm>();
 
-        // Fully qualified to avoid ambiguity
+        // Fully qualify WinForms Application to avoid collision with Cheermate.Application namespace
         System.Windows.Forms.Application.Run(mainForm);
     }
 }

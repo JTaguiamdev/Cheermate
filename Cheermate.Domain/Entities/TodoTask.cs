@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Cheermate.Domain.Enums;
 
 namespace Cheermate.Domain.Entities
@@ -25,8 +28,8 @@ namespace Cheermate.Domain.Entities
         public virtual User User { get; set; } = null!;
 
         public virtual ICollection<SubTask> SubTasks { get; set; } = new List<SubTask>();
-        public object Subtasks { get; set; }
 
+        // Computed convenience properties (not mapped by EF Core automatically; add [NotMapped] if needed)
         public bool IsOverdue => !IsCompleted && DueDate.HasValue && DueDate < DateTime.UtcNow;
         public bool IsUpcoming => !IsCompleted && DueDate.HasValue && DueDate <= DateTime.UtcNow.AddDays(3);
         public int CompletedSubTasksCount => SubTasks.Count(st => st.IsCompleted);

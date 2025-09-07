@@ -1,0 +1,5 @@
+<ItemGroup>
+  <None Update="TestData\seeded.db">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </None>
+</ItemGroup>

@@ -1,65 +1,64 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cheermate.Domain.Entities;
 using Cheermate.Domain.Enums;
+using Cheermate.Application.Repositories;
 
 namespace Cheermate.Presentation
 {
     public partial class MainForm : Form
     {
-        private DataGridView tasksGrid;
-        private BindingSource tasksBindingSource = new();
-        private List<TodoTask> _tasks = new();
+        private DataGridView tasksGrid = null!;
+        private readonly BindingSource tasksBindingSource = new();
+        private readonly ITodoTaskRepository _repo;
 
-        public MainForm()
+        public MainForm(ITodoTaskRepository repo)
         {
+            _repo = repo;
             InitializeComponent();
-            LoadSampleData();
+            // Fire and forget; alternatively await in Shown event
+            _ = LoadTasksAsync();
         }
 
         private void InitializeComponent()
         {
-            this.tasksGrid = new DataGridView();
+            tasksGrid = new DataGridView();
             SuspendLayout();
 
-            // tasksGrid
-            this.tasksGrid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            this.tasksGrid.Location = new Point(12, 12);
-            this.tasksGrid.Name = "tasksGrid";
-            this.tasksGrid.Size = new Size(760, 400);
-            this.tasksGrid.AutoGenerateColumns = true;
-            this.tasksGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            this.tasksGrid.ReadOnly = true;
-            this.tasksGrid.AllowUserToAddRows = false;
+            tasksGrid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tasksGrid.Location = new Point(12, 12);
+            tasksGrid.Name = "tasksGrid";
+            tasksGrid.Size = new Size(760, 400);
+            tasksGrid.AutoGenerateColumns = true;
+            tasksGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            tasksGrid.ReadOnly = true;
+            tasksGrid.AllowUserToAddRows = false;
 
-            // Form
-            this.ClientSize = new Size(784, 431);
-            this.Controls.Add(this.tasksGrid);
-            this.Text = "Cheermate Tasks";
-            this.StartPosition = FormStartPosition.CenterScreen;
+            ClientSize = new Size(784, 431);
+            Controls.Add(tasksGrid);
+            Text = "Cheermate Tasks";
+            StartPosition = FormStartPosition.CenterScreen;
+
+            tasksGrid.DataSource = tasksBindingSource;
 
             ResumeLayout(false);
         }
 
-        private void LoadSampleData()
+        private async Task LoadTasksAsync()
         {
-            _tasks.Add(new TodoTask
+            try
             {
-                Title = "Demo Todo",
-                Description = "Sample task",
-                UserId = 1,
-                Priority = TaskPriority.Medium,
-                SubTasks = new List<SubTask>
-                {
-                    new SubTask { Title = "Sub 1", IsCompleted = true,  TaskId = 0 },
-                    new SubTask { Title = "Sub 2", IsCompleted = false, TaskId = 0 }
-                }
-            });
-
-            tasksBindingSource.DataSource = _tasks;
-            tasksGrid.DataSource = tasksBindingSource;
+                var tasks = await _repo.GetRecentAsync();
+                tasksBindingSource.DataSource = tasks;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"Failed to load tasks: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

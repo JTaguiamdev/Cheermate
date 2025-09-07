@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Cheermate.Application.Services;
 using Cheermate.Infrastructure.Services;
@@ -18,18 +18,22 @@ public static class DependencyInjection
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("Connection string is null or empty.", nameof(connectionString));
 
+        // Existing (CheerMessages) context
         services.AddDbContext<AppDbContext>(options =>
         {
             options.UseSqlite(connectionString);
         });
 
-        // Repositories
-        services.AddScoped<ICheerMessageRepository, CheerMessageRepository>();
+        // Tasks / Users / SubTasks context
+        services.AddDbContext<CheermateDbContext>(options =>
+        {
+            options.UseSqlite(connectionString);
+        });
 
-        // Existing greeting service
+        services.AddScoped<ICheerMessageRepository, CheerMessageRepository>();
+        services.AddScoped<ITodoTaskRepository, TodoTaskRepository>();
         services.AddSingleton<IGreetingService, SystemGreetingService>();
 
-        // Optional: ensure DB created / migrations applied at runtime (only for dev; remove in prod)
         if (applyMigrations)
         {
             services.AddHostedService<MigrationRunner>();
